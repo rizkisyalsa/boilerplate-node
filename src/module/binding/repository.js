@@ -8,11 +8,13 @@ const getBinding = async (limit, page, search) => {
   let values = [limit, offset];
   let count = `SELECT COUNT(*) AS total FROM bind_obu_dana`;
   let query = `SELECT * FROM bind_obu_dana`;
+  let optionalQuery = ` WHERE id_obu ILIKE '%${search}%' OR nama ILIKE '%${search}%' OR no_hp ILIKE '%${search}%' OR plat_no ILIKE '%${search}%' OR gol ILIKE '%${search}%' OR to_char(created_at, 'DD-MM-YYYY') ILIKE '%${search}%' OR status ILIKE '%${search}%'`
+  
   if (search) {
-    count += ` WHERE id_obu ILIKE '%${search}%' OR nama ILIKE '%${search}%' OR no_hp ILIKE '%${search}%' OR plat_no ILIKE '%${search}%' OR gol ILIKE '%${search}%'`;
-    query += ` WHERE id_obu ILIKE '%${search}%' OR nama ILIKE '%${search}%' OR no_hp ILIKE '%${search}%' OR plat_no ILIKE '%${search}%' OR gol ILIKE '%${search}%'`;
+    count += optionalQuery;
+    query += optionalQuery;
   }
-  query += ` ORDER BY created_at LIMIT $1 OFFSET $2`;
+  query += ` ORDER BY created_at DESC LIMIT $1 OFFSET $2`;
   try {
     let data = await pool.query(query, values);
     let total = await pool.query(count);
